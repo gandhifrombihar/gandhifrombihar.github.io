@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Crush</title>
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to bottom, #1e1e2f, #121212);
+        color: #fff;
+    }
+    header {
+        text-align: center;
+        padding: 80px 20px;
+        background: linear-gradient(to bottom, #ff6f61, #1e1e2f);
+        clip-path: ellipse(150% 100% at 50% 0%);
+    }
+    header h1 {
+        font-size: 4em;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: white;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+    }
+    main {
+        max-width: 1300px;
+        margin: auto;
+        padding: 40px 20px;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 30px;
+    }
+    .card {
+        background: #1f1f3a;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 35px rgba(0,0,0,0.8);
+    }
+    .card img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+    .card-content {
+        padding: 20px;
+    }
+    .card-content h2 {
+        margin: 0;
+        font-size: 1.5em;
+        color: #ffcc70;
+    }
+    .card-content p {
+        margin: 5px 0;
+        font-size: 0.95em;
+        color: #ddd;
+    }
+    .rating {
+        margin-top: 10px;
+        font-size: 1.2em;
+        color: #ff6f61;
+        font-weight: bold;
+    }
+    footer {
+        background: #1e1e2f;
+        text-align: center;
+        padding: 30px;
+        font-size: 1em;
+        color: #aaa;
+        border-top: 1px solid #333;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>CAMPUS CRUSH</h1>
+</header>
+
+<main>
+    <div class="grid">
+        <!-- Example Profiles -->
+        <div class="card">
+            <img src="https://picsum.photos/300/200?random=1" alt="Profile 1">
+            <div class="card-content">
+                <h2>Priya Sharma</h2>
+                <p>Roll No: 101</p>
+                <p>Batch: 2024</p>
+                <p>Quality: Charming</p>
+                <div class="rating">Rank: 9</div>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://picsum.photos/300/200?random=2" alt="Profile 2">
+            <div class="card-content">
+                <h2>Rohit Verma</h2>
+                <p>Roll No: 102</p>
+                <p>Batch: 2023</p>
+                <p>Quality: Humorous</p>
+                <div class="rating">Rank: 8</div>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://picsum.photos/300/200?random=3" alt="Profile 3">
+            <div class="card-content">
+                <h2>Neha Singh</h2>
+                <p>Roll No: 103</p>
+                <p>Batch: 2025</p>
+                <p>Quality: Creative</p>
+                <div class="rating">Rank: 10</div>
+            </div>
+        </div>
+        <!-- Repeat 20 profiles -->
+        <script>
+            const grid = document.querySelector('.grid');
+            const names = ["Aarav Mehta", "Ishita Kapoor", "Kunal Das", "Ananya Gupta", "Vikram Rao", "Sanya Malhotra", "Rajat Singh", "Ria Banerjee", "Aditya Sharma", "Simran Kaur", "Arjun Khanna", "Meera Joshi", "Rohan Sethi", "Nikita Bose", "Sahil Jain", "Pooja Yadav", "Amit Chauhan"];
+            names.forEach((name, i) => {
+                grid.innerHTML += `
+                    <div class="card">
+                        <img src="https://picsum.photos/300/200?random=${i+4}" alt="${name}">
+                        <div class="card-content">
+                            <h2>${name}</h2>
+                            <p>Roll No: ${100+i}</p>
+                            <p>Batch: ${2023 + (i % 4)}</p>
+                            <p>Quality: ${["Charming", "Intelligent", "Funny", "Creative", "Kind"][i % 5]}</p>
+                            <div class="rating">Rank: ${Math.floor(Math.random()*10)+1}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        </script>
+    </div>
+</main>
+
+<footer>
+    Founder: Sushant Kumar
+</footer>
+
+</body>
+</html>
