@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Crush</title>
+<style>
+    :root{--bg1:#1e1e2f;--bg2:#121212;--card:#1f1f3a;--accent:#ff6f61;--muted:#aaa}
+    *{box-sizing:border-box}
+    body {
+        margin: 0;
+        font-family: system-ui, -apple-system, 'Poppins', 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+        background: linear-gradient(to bottom, var(--bg1), var(--bg2));
+        color: #fff;
+        -webkit-font-smoothing:antialiased;
+        -moz-osx-font-smoothing:grayscale;
+    }
+    header {
+        text-align: center;
+        padding: 72px 20px;
+        background: linear-gradient(180deg, var(--accent), var(--bg1));
+        clip-path: ellipse(150% 100% at 50% 0%);
+    }
+    header h1 {
+        margin:0;
+        font-size: clamp(28px, 6vw, 56px);
+        font-weight: 800;
+        letter-spacing: 3px;
+        color: white;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.35);
+    }
+    main { max-width: 1300px; margin: 24px auto; padding: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 22px; }
+    .card { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 8px 22px rgba(0,0,0,0.55); transition: transform .24s ease, box-shadow .24s ease; }
+    .card:hover { transform: translateY(-8px); box-shadow: 0 18px 44px rgba(0,0,0,0.72); }
+    .card img{ width:100%; height:200px; object-fit:cover; display:block; background:#111; }
+    .card-content{ padding:14px 16px; }
+    .card-content h2{ margin:0 0 6px 0; font-size:18px; color:#ffd38a }
+    .card-content p{ margin:4px 0; font-size:14px; color:#d6d6d6 }
+    .rating{ margin-top:10px; font-weight:700; color:var(--accent); }
+    footer{ text-align:center; padding:18px; color:var(--muted); border-top:1px solid rgba(255,255,255,0.03); margin-top:28px }
+    #testbar{ position: fixed; left: 12px; bottom: 12px; padding:10px 12px; border-radius:10px; background: rgba(10,14,22,0.88); border:1px solid rgba(255,255,255,0.04); font-size:13px; color:#cfe9ff }
+    .controls{ display:flex; gap:8px; align-items:center; justify-content:flex-end; margin-bottom:12px }
+    .btn{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer }
+    .btn:hover{ transform:translateY(-2px); }
+    @media (max-width:600px){ header{ padding:42px 12px } }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>CAMPUS CRUSH</h1>
+</header>
+
+<main>
+    <div class="controls">
+        <button id="shuffle" class="btn" title="Shuffle ranks">Shuffle Ranks</button>
+        <button id="export" class="btn" title="Export profiles as JSON">Export JSON</button>
+    </div>
+
+    <div class="grid" id="profileGrid" aria-live="polite" aria-label="Student profiles">
+        <!-- Profiles are rendered by script for consistent behavior and testability -->
+    </div>
+</main>
+
+<footer>
+    Founder: Sushant Kumar
+</footer>
+
+<div id="testbar">Self‑tests: <span id="testStatus">waiting…</span></div>
+
+<script>
+// Campus Crush — robust profile renderer + tiny self-tests
+(() => {
+  const profileGrid = document.getElementById('profileGrid');
+  const testStatus = document.getElementById('testStatus');
+
+  if(!profileGrid){ testStatus.textContent = '❌ Missing #profileGrid'; return; }
+
+  // canonical profile data (includes the three example profiles + more)
+  const profiles = [
+    { name: 'Priya Sharma', roll: 101, batch: 2024, quality: 'Charming', rank: 9, seed: 1 },
+    { name: 'Rohit Verma', roll: 102, batch: 2023, quality: 'Humorous', rank: 8, seed: 2 },
+    { name: 'Neha Singh', roll: 103, batch: 2025, quality: 'Creative', rank: 10, seed: 3 },
+  ];
+
+  const extraNames = ["Aarav Mehta","Ishita Kapoor","Kunal Das","Ananya Gupta","Vikram Rao","Sanya Malhotra","Rajat Singh","Ria Banerjee","Aditya Sharma","Simran Kaur","Arjun Khanna","Meera Joshi","Rohan Sethi","Nikita Bose","Sahil Jain","Pooja Yadav","Amit Chauhan"];
+  const qualities = ["Charming","Intelligent","Funny","Creative","Kind"];
+  extraNames.forEach((n,i)=> profiles.push({ name:n, roll: 104 + i, batch: 2023 + (i % 4), quality: qualities[i % qualities.length], rank: Math.floor(Math.random()*10)+1, seed: i+4 }));
+
+  // clear and render
+  profileGrid.innerHTML = '';
+
+  function createCard(p){
+    const card = document.createElement('div'); card.className = 'card';
+    const img = document.createElement('img');
+    // use picsum with seeded random for consistent visual results
+    img.src = `https://picsum.photos/seed/${p.seed}/400/300`;
+    img.alt = `${p.name} profile picture`;
+    img.loading = 'lazy';
+    // fallback if image fails
+    img.onerror = () => { img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="100%" height="100%" fill="%23111"/><text x="50%" y="50%" fill="%23fff" font-size="18" font-family="Arial" dominant-baseline="middle" text-anchor="middle">Image unavailable</text></svg>'; };
+
+    const content = document.createElement('div'); content.className = 'card-content';
+    const h2 = document.createElement('h2'); h2.textContent = p.name;
+    const p1 = document.createElement('p'); p1.textContent = `Roll No: ${p.roll}`;
+    const p2 = document.createElement('p'); p2.textContent = `Batch: ${p.batch}`;
+    const p3 = document.createElement('p'); p3.textContent = `Quality: ${p.quality}`;
+    const rating = document.createElement('div'); rating.className = 'rating'; rating.textContent = `Rank: ${p.rank}`;
+
+    content.appendChild(h2); content.appendChild(p1); content.appendChild(p2); content.appendChild(p3); content.appendChild(rating);
+    card.appendChild(img); card.appendChild(content);
+    return card;
+  }
+
+  function renderProfiles(){
+    profileGrid.innerHTML = '';
+    profiles.forEach(p=> profileGrid.appendChild(createCard(p)));
+    testStatus.textContent = `✅ ${profiles.length} profiles rendered`;
+  }
+
+  // Controls
+  document.getElementById('shuffle').addEventListener('click', ()=>{
+    // shuffle ranks in-place and update display
+    for(let i=profiles.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [profiles[i].rank, profiles[j].rank] = [profiles[j].rank, profiles[i].rank]; }
+    renderProfiles();
+  });
+
+  document.getElementById('export').addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(profiles, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'campus-crush-profiles.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  });
+
+  // run
+  renderProfiles();
+
+  // Additional tiny test cases (programmatic checks)
+  const tests = [];
+  tests.push({name:'profileCount', ok: profiles.length >= 10});
+  tests.push({name:'allHaveNames', ok: profiles.every(p=>typeof p.name === 'string' && p.name.length>0)});
+  tests.push({name:'uniqueRolls', ok: (()=>{ const s=new Set(profiles.map(p=>p.roll)); return s.size === profiles.length; })()});
+
+  const pass = tests.filter(t=>t.ok).length;
+  testStatus.textContent += ` · ${pass}/${tests.length} checks passed`;
+
+})();
+</script>
+
+</body>
+</html>
